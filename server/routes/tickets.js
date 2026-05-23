@@ -1,6 +1,7 @@
 const express = require('express');
 const Ticket = require('../models/Ticket');
 const { verifyToken, isAdmin } = require('../middleware/auth');
+const { classifyTicket, draftResponse } = require('../services/ai');
 
 const router = express.Router();
 
@@ -81,7 +82,12 @@ router.post('/', verifyToken, async (req, res) => {
       }]
     });
 
-    // TODO: AI classification will be injected here before saving
+    // AI classification will be injected here before saving
+    const aiClassification = await classifyTicket(subject, description);
+    if (aiClassification) {
+      if (aiClassification.category) newTicket.category = aiClassification.category;
+      if (aiClassification.priority) newTicket.priority = aiClassification.priority;
+    }
 
     await newTicket.save();
     res.status(201).json(newTicket);
@@ -136,6 +142,26 @@ router.patch('/:id', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Update ticket error:', error);
     res.status(500).json({ error: 'Failed to update ticket.' });
+  }
+});
+
+// Draft response
+router.get('/:id/draft', verifyToken, async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id).populate('book');
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found.' });
+    }
+
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Access denied. Only admins can draft responses.' });
+    }
+
+    const draft = await draftResponse(ticket);
+    res.json({ draft });
+  } catch (error) {
+    console.error('Draft response error:', error);
+    res.status(500).json({ error: 'Failed to generate draft.' });
   }
 });
 
