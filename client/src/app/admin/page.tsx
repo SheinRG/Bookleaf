@@ -128,11 +128,11 @@ export default function AdminDashboard() {
               <div 
                 key={ticket._id} 
                 onClick={() => setSelectedTicket(ticket)}
-                className={\`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors 
-                  \${selectedTicket?._id === ticket._id ? 'bg-blue-50 border-l-4 border-blue-500' : ''}\`}
+                className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors 
+                  ${selectedTicket?._id === ticket._id ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className={\`text-xs px-2 py-0.5 rounded font-medium \${getPriorityColor(ticket.priority)}\`}>
+                  <span className={`text-xs px-2 py-0.5 rounded font-medium ${getPriorityColor(ticket.priority)}`}>
                     {ticket.priority}
                   </span>
                   <span className="text-xs text-gray-500">
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
                 <h3 className="font-semibold text-gray-900 text-sm truncate">{ticket.subject}</h3>
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-xs text-gray-600 truncate">{ticket.author?.name}</span>
-                  <span className={\`text-xs font-semibold \${ticket.status === 'Open' ? 'text-red-600' : 'text-green-600'}\`}>
+                  <span className={`text-xs font-semibold ${ticket.status === 'Open' ? 'text-red-600' : 'text-green-600'}`}>
                     {ticket.status}
                   </span>
                 </div>
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
 
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {selectedTicket.messages.map((msg: any, idx: number) => (
-                  <div key={idx} className={\`p-4 rounded-lg text-sm max-w-[80%] \${msg.isInternal ? 'bg-yellow-100 border border-yellow-300 ml-auto' : msg.sender._id === user.id ? 'bg-blue-100 ml-auto' : 'bg-white border border-gray-200'}\`}>
+                  <div key={idx} className={`p-4 rounded-lg text-sm max-w-[80%] ${msg.isInternal ? 'bg-yellow-100 border border-yellow-300 ml-auto' : msg.sender._id === user.id ? 'bg-blue-100 ml-auto' : 'bg-white border border-gray-200'}`}>
                     <div className="font-semibold text-xs mb-1 text-gray-700 flex justify-between">
                       <span>{msg.sender.name} {msg.isInternal && '(Internal Note)'}</span>
                       <span className="text-gray-500 font-normal ml-4">{new Date(msg.createdAt || Date.now()).toLocaleString()}</span>
@@ -224,7 +224,7 @@ export default function AdminDashboard() {
                   onChange={(e) => setReplyMessage(e.target.value)}
                   placeholder="Type your response here..."
                   className="w-full border border-gray-300 rounded p-3 text-sm text-gray-900 focus:outline-none focus:border-blue-500"
-                />
+                ></textarea>
                 <div className="mt-3 flex justify-end">
                   <button 
                     onClick={() => updateTicket({ new_message: replyMessage, is_internal: isInternal })}

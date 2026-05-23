@@ -125,7 +125,7 @@ export default function AuthorDashboard() {
                       <div className="text-xs text-gray-500">{book.isbn}</div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500">
-                      <span className={\`px-2 py-1 text-xs rounded-full \${book.status.includes('Live') ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}\`}>
+                      <span className={`px-2 py-1 text-xs rounded-full ${book.status.includes('Live') ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                         {book.status}
                       </span>
                     </td>
@@ -182,7 +182,7 @@ export default function AuthorDashboard() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900"
-                />
+                ></textarea>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Attachment (Optional UI only)</label>
@@ -212,10 +212,10 @@ export default function AuthorDashboard() {
                         {ticket.book && ` • Book: ${ticket.book.title}`}
                       </p>
                     </div>
-                    <span className={\`px-2 py-1 text-xs font-semibold rounded-full 
-                      \${ticket.status === 'Open' ? 'bg-red-100 text-red-800' : 
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full 
+                      ${ticket.status === 'Open' ? 'bg-red-100 text-red-800' : 
                         ticket.status === 'In Progress' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-green-100 text-green-800'}\`}
+                        'bg-green-100 text-green-800'}`}
                     >
                       {ticket.status}
                     </span>
@@ -223,7 +223,7 @@ export default function AuthorDashboard() {
                   
                   <div className="mt-4 space-y-3 max-h-64 overflow-y-auto">
                     {ticket.messages.filter((m: any) => !m.isInternal).map((msg: any, idx: number) => (
-                      <div key={idx} className={\`p-3 rounded-md text-sm \${msg.sender === user.id ? 'bg-blue-50 ml-8' : 'bg-gray-50 mr-8'}\`}>
+                      <div key={idx} className={`p-3 rounded-md text-sm ${msg.sender === user.id ? 'bg-blue-50 ml-8' : 'bg-gray-50 mr-8'}`}>
                         <div className="font-semibold text-xs mb-1 text-gray-700">
                           {msg.sender === user.id ? 'You' : 'BookLeaf Support'}
                         </div>
