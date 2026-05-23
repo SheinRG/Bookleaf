@@ -10,7 +10,8 @@ if (!fs.existsSync(dir)){
 const { OpenAI } = require('openai');
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'dummy_key_to_prevent_crash'
+  apiKey: process.env.GROQ_API_KEY || 'dummy_key_to_prevent_crash',
+  baseURL: 'https://api.groq.com/openai/v1',
 });
 
 const KB_SUMMARY = `
@@ -25,8 +26,8 @@ BookLeaf Policies:
 
 async function classifyTicket(subject, description) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      console.warn('OpenAI API key missing. Skipping classification.');
+    if (!process.env.GROQ_API_KEY) {
+      console.warn('Groq API key missing. Skipping classification.');
       return null;
     }
 
@@ -40,7 +41,7 @@ Description: ${description}
 Output strictly as JSON: {"category": "...", "priority": "..."}`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'llama-3.1-8b-instant',
       messages: [{ role: 'system', content: 'You are an expert ticket classifier.' }, { role: 'user', content: prompt }],
       response_format: { type: 'json_object' }
     });
@@ -54,8 +55,8 @@ Output strictly as JSON: {"category": "...", "priority": "..."}`;
 
 async function draftResponse(ticket) {
   try {
-    if (!process.env.OPENAI_API_KEY) {
-      console.warn('OpenAI API key missing. Skipping draft generation.');
+    if (!process.env.GROQ_API_KEY) {
+      console.warn('Groq API key missing. Skipping draft generation.');
       return null;
     }
 
@@ -70,7 +71,7 @@ ${ticket.book ? `Book Context: Title="${ticket.book.title}", Status="${ticket.bo
 Provide only the draft response text.`;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'llama-3.3-70b-versatile',
       messages: [{ role: 'system', content: 'You are a helpful support agent.' }, { role: 'user', content: prompt }]
     });
 
