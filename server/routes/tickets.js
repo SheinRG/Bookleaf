@@ -159,6 +159,7 @@ router.get('/:id/draft', verifyToken, async (req, res) => {
       return res.status(404).json({ error: 'Ticket not found.' });
     }
 
+    console.log('[DEBUG] GET /:id/draft called by user:', req.user);
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Access denied. Only admins can draft responses.' });
     }

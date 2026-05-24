@@ -21,10 +21,10 @@ export default function AuthorDashboard() {
   const [selectedBook, setSelectedBook] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Ticket replies state
   const [ticketReplies, setTicketReplies] = useState<Record<string, string>>({});
   const [isReplying, setIsReplying] = useState<Record<string, boolean>>({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   useEffect(() => {
     const token = getAuthToken();
@@ -88,7 +88,8 @@ export default function AuthorDashboard() {
         setDescription('');
         setSelectedBook('');
         fetchTickets(token as string);
-        alert('Ticket submitted successfully');
+        setShowSuccessPopup(true);
+        setTimeout(() => setShowSuccessPopup(false), 3000);
       }
     } catch (e) {
       alert('Failed to submit ticket');
@@ -196,25 +197,6 @@ export default function AuthorDashboard() {
                   className="font-semibold text-[13px] ml-1 overflow-hidden whitespace-nowrap"
                 >
                   Dashboard
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div 
-            onClick={() => scrollToSection('support-section')}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-white/5 text-white/70 hover:text-white cursor-pointer group"
-          >
-            <span className="material-symbols-outlined text-[20px] mb-0.5">contact_support</span>
-            <AnimatePresence>
-              {sidebarOpen && (
-                <motion.span 
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="font-semibold text-[13px] ml-1 overflow-hidden whitespace-nowrap"
-                >
-                  Support Query
                 </motion.span>
               )}
             </AnimatePresence>
@@ -557,6 +539,25 @@ export default function AuthorDashboard() {
           </section>
         </div>
         
+        {/* Success Popup */}
+        <AnimatePresence>
+          {showSuccessPopup && (
+            <motion.div 
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 50, scale: 0.9 }}
+              className="fixed bottom-8 right-8 bg-surface-container-lowest border border-outline-variant shadow-2xl rounded-2xl p-4 flex items-center gap-4 z-50 pointer-events-none"
+            >
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-green-700 text-[24px]">check_circle</span>
+              </div>
+              <div>
+                <h4 className="font-bold text-on-surface text-[15px]">Ticket Submitted!</h4>
+                <p className="text-on-surface-variant text-[13px] mt-0.5">We've received your query.</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );

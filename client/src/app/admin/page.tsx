@@ -380,9 +380,6 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex justify-between items-center px-0.5">
                     <span className="text-[11px] font-semibold text-on-surface-variant/70 uppercase tracking-[0.12em]">Inbox · {filteredTickets.length}</span>
-                    <button className="p-1 hover:bg-surface-container-high rounded-lg transition-colors cursor-pointer">
-                      <span className="material-symbols-outlined text-[18px] text-outline">tune</span>
-                    </button>
                   </div>
                 </div>
 
@@ -647,6 +644,12 @@ export default function AdminDashboard() {
                             onClick={() => {
                               if (!isExpanded) setIsFocused(true);
                             }}
+                            onFocus={() => setIsFocused(true)}
+                            onBlur={(e) => {
+                              if (!e.currentTarget.contains(e.relatedTarget)) {
+                                setIsFocused(false);
+                              }
+                            }}
                           >
                             {/* Resize handle */}
                             {isExpanded && (
@@ -661,8 +664,6 @@ export default function AdminDashboard() {
                             <textarea 
                               value={replyMessage}
                               onChange={(e) => setReplyMessage(e.target.value)}
-                              onFocus={() => setIsFocused(true)}
-                              onBlur={() => setIsFocused(false)}
                               style={{ height: isExpanded ? `${replyHeight}px` : '24px' }}
                               className={`w-full bg-transparent border-none focus:ring-0 resize-none outline-none custom-scrollbar transition-colors duration-200 text-[14px] ${
                                 isExpanded ? 'text-on-surface' : 'text-on-surface leading-6'
@@ -680,8 +681,20 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-3">
                                   {/* Left Actions */}
                                   <div className="flex items-center gap-1 border-r border-outline-variant/20 pr-3">
+                                    <input 
+                                      type="file" 
+                                      id="file-upload" 
+                                      className="hidden" 
+                                      onChange={(e) => {
+                                        if (e.target.files && e.target.files.length > 0) {
+                                          alert(`File "${e.target.files[0].name}" selected. (Cloud storage uploads are coming soon!)`);
+                                        }
+                                      }}
+                                    />
                                     <button 
-                                      type="button" 
+                                      type="button"
+                                      onClick={() => document.getElementById('file-upload')?.click()}
+                                      onMouseDown={(e) => e.preventDefault()}
                                       className="p-1.5 hover:bg-surface-container-high rounded-lg transition-colors text-outline flex items-center justify-center cursor-pointer"
                                       title="Attach file"
                                     >
@@ -771,7 +784,7 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.25 }}
-              className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar bg-background flex flex-col"
+              className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar bg-background"
             >
               {/* Header */}
               <div className="mb-6 flex justify-between items-center">
@@ -785,7 +798,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Manuscripts Table */}
-              <div className="bg-white rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden flex-1">
+              <div className="bg-white rounded-2xl border border-outline-variant/30 shadow-sm overflow-hidden mb-8">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse select-none">
                     <thead>
@@ -867,7 +880,7 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.25 }}
-              className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar bg-background flex flex-col"
+              className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar bg-background"
             >
               {/* Header */}
               <div className="mb-6">
@@ -898,7 +911,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Royalties Table */}
-              <div className="bg-white rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden flex-1">
+              <div className="bg-white rounded-2xl border border-outline-variant/20 shadow-sm overflow-hidden mb-8">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse select-none">
                     <thead>

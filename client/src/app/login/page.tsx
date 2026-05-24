@@ -33,6 +33,12 @@ export default function LoginPage() {
         return;
       }
 
+      if (data.user.role !== role) {
+        setError(`You are not an ${role}. Please switch to the ${data.user.role === 'admin' ? 'Admin' : 'Author'} Login tab.`);
+        setIsLoading(false);
+        return;
+      }
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
