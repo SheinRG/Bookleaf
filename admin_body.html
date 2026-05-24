@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BookLeaf Admin Portal | Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Geist', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ddbfc0; border-radius: 10px; }
+        .ai-glow {
+            background: linear-gradient(90deg, #ed6b78, #a73645, #ffb2b6);
+            background-size: 200% auto;
+            animation: moveGradient 4s linear infinite;
+        }
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .pulse-critical {
+            animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-container-lowest": "#ffffff",
+                "on-surface-variant": "#574142",
+                "outline": "#8a7172",
+                "on-surface": "#1c1b1b",
+                "primary-container": "#ed6b78",
+                "on-primary-container": "#620019",
+                "tertiary-fixed-dim": "#d2c3c4",
+                "error": "#ba1a1a",
+                "on-secondary-fixed": "#1b1c1c",
+                "tertiary-fixed": "#eedfe0",
+                "inverse-on-surface": "#f3f0ef",
+                "surface-tint": "#a73645",
+                "error-container": "#ffdad6",
+                "primary": "#a73645",
+                "on-background": "#1c1b1b",
+                "on-error-container": "#93000a",
+                "on-secondary": "#ffffff",
+                "primary-fixed": "#ffdadb",
+                "inverse-surface": "#313030",
+                "secondary-fixed-dim": "#c8c6c6",
+                "primary-fixed-dim": "#ffb2b6",
+                "surface-container": "#f0edec",
+                "surface-container-low": "#f6f3f2",
+                "on-primary-fixed-variant": "#871e2f",
+                "on-error": "#ffffff",
+                "on-tertiary-container": "#342c2d",
+                "on-tertiary-fixed": "#211a1b",
+                "on-secondary-fixed-variant": "#474747",
+                "on-primary-fixed": "#40000d",
+                "surface-container-high": "#ebe7e7",
+                "secondary": "#5f5e5e",
+                "secondary-fixed": "#e4e2e1",
+                "secondary-container": "#e4e2e1",
+                "background": "#fcf9f8",
+                "surface-dim": "#dcd9d9",
+                "surface-bright": "#fcf9f8",
+                "on-tertiary": "#ffffff",
+                "tertiary-container": "#9f9293",
+                "on-secondary-container": "#656464",
+                "surface": "#fcf9f8",
+                "tertiary": "#675c5d",
+                "on-tertiary-fixed-variant": "#4e4445",
+                "inverse-primary": "#ffb2b6",
+                "outline-variant": "#ddbfc0",
+                "surface-container-highest": "#e5e2e1",
+                "surface-variant": "#e5e2e1",
+                "on-primary": "#ffffff"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "gutter": "24px",
+                "container-max": "1280px",
+                "margin-desktop": "64px",
+                "margin-mobile": "20px",
+                "unit": "8px",
+                "xs": "4px",
+                "base": "8px",
+                "margin": "32px",
+                "xl": "64px",
+                "md": "24px",
+                "sm": "12px",
+                "lg": "48px"
+            },
+            "fontFamily": {
+                "body-md": ["Geist"],
+                "display-lg": ["Geist"],
+                "label-sm": ["Geist"],
+                "headline-lg-mobile": ["Geist"],
+                "label-md": ["Geist"],
+                "headline-md": ["Geist"],
+                "headline-lg": ["Geist"],
+                "body-lg": ["Geist"],
+                "body-sm": ["Geist"]
+            },
+            "fontSize": {
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-surface flex h-screen overflow-hidden">
+<!-- SideNavBar (Shared Component Identity) -->
+<aside class="flex flex-col h-full py-md px-sm border-r border-outline-variant bg-surface-container-low w-[280px] shrink-0 z-40">
+<div class="px-sm mb-lg flex items-center gap-3">
+<img alt="BookLeaf Brand Logo" class="w-10 h-10 rounded-lg shadow-sm" src="LOGO_PLACEHOLDER"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">BookLeaf</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Admin Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-sm px-sm py-base rounded transition-all duration-200 text-on-surface-variant hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex items-center gap-sm px-sm py-base rounded transition-all duration-200 bg-surface-container-lowest text-primary border-l-4 border-primary shadow-sm cursor-pointer">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-md text-label-md">Manuscripts</span>
+</div>
+<div class="flex items-center gap-sm px-sm py-base rounded transition-all duration-200 text-on-surface-variant hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Royalties</span>
+</div>
+<div class="flex items-center gap-sm px-sm py-base rounded transition-all duration-200 text-on-surface-variant hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-label-md text-label-md">Messages</span>
+</div>
+<div class="flex items-center gap-sm px-sm py-base rounded transition-all duration-200 text-on-surface-variant hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</div>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full bg-primary text-on-primary py-sm rounded-lg font-label-md hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-md">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                New Project
+            </button>
+<div class="flex items-center gap-sm px-sm py-base text-on-surface-variant hover:text-primary cursor-pointer transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help Center</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Split-Pane Area -->
+<main class="flex-1 flex overflow-hidden">
+<!-- Left Pane: Ticket Queue -->
+<section class="w-1/3 min-w-[360px] border-r border-outline-variant bg-surface-container-lowest flex flex-col">
+<!-- Search & Filters -->
+<div class="p-md space-y-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]" data-icon="search">search</span>
+<input class="w-full pl-xl pr-sm py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-sm focus:outline-none focus:border-primary transition-colors" placeholder="Search author tickets..." type="text"/>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">All Open Tickets (24)</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="filter_list">filter_list</span>
+</div>
+</div>
+<!-- Scrollable List -->
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Ticket Item: Critical -->
+<div class="p-md border-b border-outline-variant bg-primary-container/10 hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-1">
+<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded font-label-md text-[10px] uppercase flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-red-600 rounded-full pulse-critical"></span> Critical
+                        </span>
+<span class="font-label-md text-[11px] text-on-surface-variant">2h ago</span>
+</div>
+<h3 class="font-body-md font-semibold text-primary truncate">Royalties mismatch for Q3 Report</h3>
+<p class="font-body-sm text-on-surface-variant line-clamp-2 mt-1">Hello, I noticed that the recent royalties calculation for 'The Midnight Library' doesn't align with...</p>
+<div class="mt-sm flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-dim overflow-hidden border border-outline-variant">
+<img alt="Elena" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcm2YGevLMKO6Bvwkm0M0zoSMvabWkobW_wy9WN-uPKm27LXh4Y7895VIBULgZeFVH831NaG_Zo97Dmnuh8iJvlMiAcRZ0LVfg1mW2TYDr7msMReIDrP51oQAWf18lTTJDz0pkE2aAAhlTEgR2sPt8X_w0eueMkwyqE9PexM1T8-jxxWCv8Qgw5jIjINGK4FykznD801e3EpFxIvjXN_XjMQ4I9URUXXUVNOTGKT_OcKurDBzHoYa_FI9fOFHX5g-L75MDrvbcMw7L"/>
+</div>
+<span class="font-label-md text-on-surface-variant">Elena Vance</span>
+</div>
+</div>
+<!-- Ticket Item: High (Selected) -->
+<div class="p-md border-b border-l-4 border-primary bg-primary-fixed/20 hover:bg-primary-fixed/30 transition-colors cursor-pointer relative shadow-inner">
+<div class="flex justify-between items-start mb-1">
+<span class="bg-primary-container text-on-primary-container px-2 py-0.5 rounded font-label-md text-[10px] uppercase">High Priority</span>
+<span class="font-label-md text-[11px] text-on-surface-variant">5h ago</span>
+</div>
+<h3 class="font-body-md font-bold text-primary truncate">Formatting error in Chapter 14 upload</h3>
+<p class="font-body-sm text-on-surface-variant line-clamp-2 mt-1">The system keeps rejecting the epub format for my latest manuscript. Can we check the validator?</p>
+<div class="mt-sm flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-dim overflow-hidden border border-outline-variant">
+<img alt="Marcus" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3q_3erumG6FYJCHvK-G-0j7M2vXTP8A8urLXv0rBZk9j5nRN-pgrX0AiR9GZPgBBsydmUVy6-6I-0rsPnTY3B3m4nNc0czF_nukL3elDYJxGBGkt1EC64kT1TNYY9DZYKWzuk2X2HDANfkry6RY3YTyrd5XGXSXGjjD7jq0_7-hdPRcgbaQnx0agy2NvMHKjV4OIgzWEZ8eDJhUD_2P5YoGj_vZdwFRVzajJXTDVMDMnC3K1ngoDkSzfsXDWS-JrGx7yEsWT0x1Ka"/>
+</div>
+<span class="font-label-md text-on-surface-variant">Marcus Aurelius</span>
+</div>
+</div>
+<!-- Ticket Item: Medium -->
+<div class="p-md border-b border-outline-variant hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-1">
+<span class="bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded font-label-md text-[10px] uppercase">Medium</span>
+<span class="font-label-md text-[11px] text-on-surface-variant">Yesterday</span>
+</div>
+<h3 class="font-body-md font-semibold text-primary truncate">Bio page update request</h3>
+<p class="font-body-sm text-on-surface-variant line-clamp-2 mt-1">I'd like to update my author bio and profile picture before the pre-order launch next week.</p>
+<div class="mt-sm flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-dim overflow-hidden border border-outline-variant">
+<img alt="Sarah" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALHqtPGTUCcbC0xdYKgkBK5N7cUqDJirH-16XpE1xAtrnO1yUKGrxCSgMKZLJ-EXsVnNMp_LEiw0ren24SYQ0EKZf05Bb96Y7jLJZ1tBgv1s6TJ_ogY-jl8pfcPmP_fEA-4t6byYy3dNuLv2CgjWu6Pe7Vlxfj_h2uwvNGDN80ADE9yHH78rOwYK5KsB3g4I23RWlpYIi_1Hnz_eo_OHqvXAEibPtYo6zcYBH4LO5MWy1B9OnPLajhvd54S2HTFza3GvzX136oWF0J"/>
+</div>
+<span class="font-label-md text-on-surface-variant">Sarah J. Miller</span>
+</div>
+</div>
+<!-- Ticket Item: Low -->
+<div class="p-md border-b border-outline-variant hover:bg-surface-container transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-1">
+<span class="bg-surface-container-highest text-secondary px-2 py-0.5 rounded font-label-md text-[10px] uppercase">Low</span>
+<span class="font-label-md text-[11px] text-on-surface-variant">Oct 24</span>
+</div>
+<h3 class="font-body-md font-semibold text-primary truncate">Question about newsletter tools</h3>
+<p class="font-body-sm text-on-surface-variant line-clamp-2 mt-1">Does BookLeaf support direct integration with Mailchimp for the author dashboard?</p>
+<div class="mt-sm flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-dim overflow-hidden border border-outline-variant">
+<img alt="Peter" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDquUV3pyzhSjeU1aRMVZfcJIp-0nPpaZJ9-uFKVuBMF42W5KWqulPpInJ4V5g9DlWw0m6Z-J2nkHCulxY8ciXPoyX725hXbLvO7PojwvPA2oDtNxylwgIyg_AnabBCA3ly4bms_fhtStKo0A__FUUNb_kP6l7YXivtm5DZgpb3xwu20f7sy4SNrNocRMWnBmiwSXGfa6e1N8jzTfhq3DNNXygrzB6UNXlkKY4J6CJJehlMWkjkAvZhEb7VRTZBEwADBExlas1iWqkg"/>
+</div>
+<span class="font-label-md text-on-surface-variant">Peter Penridge</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Pane: Workspace -->
+<section class="flex-1 flex flex-col bg-background relative">
+<!-- Header -->
+<header class="h-20 shrink-0 border-b border-outline-variant flex items-center px-margin bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-30 justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-sm">
+<h2 class="font-headline-md text-headline-md text-primary truncate max-w-md">Formatting error in Chapter 14 upload</h2>
+<span class="bg-primary-fixed text-on-primary-fixed-variant px-sm py-1 rounded-full font-label-md text-[10px]">TKT-4829</span>
+</div>
+<div class="flex items-center gap-base mt-1">
+<span class="font-body-sm text-on-surface-variant">Author: <strong>Marcus Aurelius</strong></span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-body-sm text-on-surface-variant">Book: <em>Meditations for Moderns</em></span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex flex-col items-end">
+<label class="font-label-md text-[10px] uppercase text-on-surface-variant mb-1">Priority</label>
+<select class="bg-surface-container-low border-none rounded text-primary font-label-md py-1 pr-base cursor-pointer focus:ring-1 focus:ring-primary">
+<option>Critical</option>
+<option selected="">High</option>
+<option>Medium</option>
+<option>Low</option>
+</select>
+</div>
+<div class="flex flex-col items-end">
+<label class="font-label-md text-[10px] uppercase text-on-surface-variant mb-1">Status</label>
+<select class="bg-surface-container-high border-none rounded text-secondary font-label-md py-1 pr-base cursor-pointer focus:ring-1 focus:ring-primary">
+<option selected="">In Progress</option>
+<option>Awaiting Author</option>
+<option>Resolved</option>
+<option>Escalated</option>
+</select>
+</div>
+</div>
+</header>
+<!-- Conversation Area -->
+<div class="flex-1 overflow-y-auto p-margin space-y-lg custom-scrollbar">
+<!-- Message: Author -->
+<div class="flex gap-md max-w-3xl">
+<div class="w-10 h-10 rounded-full bg-surface-dim overflow-hidden shrink-0">
+<img alt="Author" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv06w0NDDeD6vy3nin_35wWqJugyn_Dfiqs_LnTWxDim6CV1pS-ZJt8NtGriCx5GWAV0BFhc1yYh_wSC2CPbTNFVPcKnkqSpgw66XgcQKFsfUhILrSbIDpk-QUAycghE7gvScPW0X5zTCfwpOA5ITr51toN1wOfbIjar-TcSDNpOjXWbEQzyC3E1weXPrX2WBOTncRBiG2LanwNqdFuAm7sBQ54_maiPH1oMSQk01fzvutYFAQ7wXiz7OBUqzvSoVTLBkgsGlwMUY6"/>
+</div>
+<div class="bg-surface-container-high p-md rounded-xl rounded-tl-none shadow-sm">
+<p class="font-body-md text-on-surface">The system keeps rejecting the epub format for my latest manuscript. I've tried three different exports from Vellum, but the Chapter 14 images seem to trigger a 'Validation Error 402'. Can you help?</p>
+<span class="font-label-md text-[11px] text-on-surface-variant mt-2 block">10:42 AM</span>
+</div>
+</div>
+<!-- Message: Internal Note -->
+<div class="flex justify-center">
+<div class="bg-primary-fixed/30 border border-primary-fixed-dim p-sm rounded-lg flex items-center gap-sm max-w-xl">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="lock" data-weight="fill">lock</span>
+<p class="font-body-sm text-on-primary-fixed-variant">
+<strong>Internal Note:</strong> Checked server logs. Error 402 is a file size limit on individual assets. Image size in Ch 14 is 12MB.
+                        </p>
+<span class="font-label-md text-[11px] text-primary/60 whitespace-nowrap ml-4">11:15 AM</span>
+</div>
+</div>
+<!-- Message: Admin -->
+<div class="flex flex-row-reverse gap-md max-w-3xl ml-auto">
+<div class="w-10 h-10 rounded-full bg-primary overflow-hidden shrink-0 flex items-center justify-center shadow-md">
+<span class="text-on-primary font-bold">JD</span>
+</div>
+<div class="bg-primary-container text-on-primary p-md rounded-xl rounded-tr-none shadow-md">
+<p class="font-body-md">Hello Marcus, thanks for reaching out. I'm investigating the validator logs now. It looks like an asset size issue. Please hold on while I check the specific threshold.</p>
+<span class="font-label-md text-[11px] text-on-primary-container mt-2 block opacity-70">11:18 AM</span>
+</div>
+</div>
+<!-- Placeholder for dynamic space -->
+<div class="h-20"></div>
+</div>
+<!-- Reply Area -->
+<div class="bg-surface-container-lowest border-t border-outline-variant p-md">
+<div class="max-w-4xl mx-auto space-y-md">
+<!-- AI Assist Button -->
+<div class="flex justify-start">
+<button class="ai-glow text-white px-md py-base rounded-full font-label-md flex items-center gap-sm shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-[18px]" data-icon="auto_awesome">auto_awesome</span>
+                            ✨ AI Draft Response
+                        </button>
+</div>
+<!-- Rich Text Input -->
+<div class="border border-outline-variant rounded-xl overflow-hidden focus-within:border-primary transition-colors bg-surface-bright">
+<div class="bg-surface-container-low px-sm py-1 border-b border-outline-variant flex gap-sm">
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant"><span class="material-symbols-outlined text-[18px]" data-icon="format_bold">format_bold</span></button>
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant"><span class="material-symbols-outlined text-[18px]" data-icon="format_italic">format_italic</span></button>
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant"><span class="material-symbols-outlined text-[18px]" data-icon="link">link</span></button>
+<div class="w-[1px] h-4 bg-outline-variant my-auto"></div>
+<button class="p-1 hover:bg-surface-container-high rounded transition-colors text-on-surface-variant"><span class="material-symbols-outlined text-[18px]" data-icon="attach_file">attach_file</span></button>
+</div>
+<textarea class="w-full h-32 p-md font-body-md bg-transparent border-none focus:ring-0 resize-none" placeholder="Type your message to Marcus..."></textarea>
+</div>
+<!-- Footer Controls -->
+<footer class="flex items-center justify-between">
+<div class="flex items-center gap-sm cursor-pointer select-none group">
+<input class="w-4 h-4 text-primary border-outline-variant rounded focus:ring-primary" id="internal-note" type="checkbox"/>
+<label class="font-body-sm text-on-surface-variant cursor-pointer group-hover:text-primary transition-colors" for="internal-note">Mark as Internal Note</label>
+</div>
+<div class="flex items-center gap-md">
+<button class="px-md py-base font-label-md text-primary hover:bg-surface-container-high rounded-lg transition-colors">Discard</button>
+<button class="bg-primary text-on-primary px-xl py-base rounded-lg font-label-md shadow-md hover:brightness-110 active:scale-95 transition-all">
+                                Send Message
+                            </button>
+</div>
+</footer>
+</div>
+</div>
+</section>
+</main>
+<!-- Micro-interactions Script -->
+<script>
+        // Simple logic for toggle internal note styling
+        const checkbox = document.getElementById('internal-note');
+        const textarea = document.querySelector('textarea');
+        
+        checkbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                textarea.parentElement.classList.add('bg-primary-fixed/10', 'border-primary-fixed-dim');
+                textarea.placeholder = "Write a private note for staff...";
+            } else {
+                textarea.parentElement.classList.remove('bg-primary-fixed/10', 'border-primary-fixed-dim');
+                textarea.placeholder = "Type your message to Marcus...";
+            }
+        });
+
+        // AI Draft Simulation
+        const aiBtn = document.querySelector('.ai-glow');
+        aiBtn.addEventListener('click', () => {
+            textarea.value = "Hi Marcus, I've identified the issue. The 'Validation Error 402' is being triggered by the high-resolution images in Chapter 14, which exceed our current per-asset limit of 10MB. If you can compress those images or reduce the file size slightly, it should upload perfectly. Would you like me to guide you through the optimization steps?";
+            textarea.focus();
+        });
+    </script>
+</body></html>
