@@ -24,6 +24,7 @@ export default function AuthorDashboard() {
   // Ticket replies state
   const [ticketReplies, setTicketReplies] = useState<Record<string, string>>({});
   const [isReplying, setIsReplying] = useState<Record<string, boolean>>({});
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const token = getAuthToken();
@@ -144,84 +145,118 @@ export default function AuthorDashboard() {
   return (
     <div className="flex min-h-screen bg-background text-on-surface font-body-md overflow-x-hidden">
       
-      {/* 1. Retractable Sidebar using Framer Motion */}
+      {/* 1. Retractable Premium Sidebar */}
       <motion.aside 
-        animate={{ width: sidebarOpen ? 280 : 84 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-        className="hidden md:flex flex-col h-screen py-unit px-unit border-r border-outline-variant bg-surface-container shrink-0 z-50 sticky top-0 select-none"
+        animate={{ width: sidebarOpen ? 260 : 72 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="bg-gradient-to-b from-[#1c1b1b] to-[#2a2123] border-r border-[#3a2f31] text-white/90 hidden md:flex flex-col h-screen py-5 px-3 shrink-0 z-50 sticky top-0 select-none overflow-hidden"
       >
-        {/* Logo and Collapsing Switch */}
+        {/* Brand/Logo — Toggles Sidebar */}
         <div 
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="flex items-center gap-3 px-unit mb-8 cursor-pointer group"
+          className="px-2 mb-8 flex items-center gap-3 cursor-pointer group"
           title={sidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
         >
-          <motion.img 
-            whileHover={{ scale: 1.08, rotate: [0, -10, 10, 0] }}
-            alt="BookLeaf Logo" 
-            className="h-10 w-10 rounded-lg shadow-md" 
-            src="/logo.png" 
-          />
-          {sidebarOpen && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex-1"
-            >
-              <h1 className="font-headline-md text-headline-md font-bold text-primary">BookLeaf</h1>
-              <p className="font-label-md text-label-md text-on-surface-variant">Author Portal</p>
-            </motion.div>
-          )}
+          <motion.div
+            whileHover={{ scale: 1.06 }}
+            className="w-10 h-10 rounded-xl bg-primary/90 flex items-center justify-center shadow-lg shrink-0"
+          >
+            <span className="material-symbols-outlined text-white text-[22px]">menu_book</span>
+          </motion.div>
+          <AnimatePresence>
+            {sidebarOpen && (
+              <motion.div
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.2 }}
+                className="flex-1 min-w-0"
+              >
+                <h1 className="text-[18px] font-bold text-white tracking-tight leading-tight">BookLeaf</h1>
+                <p className="text-[11px] text-white/40 uppercase tracking-[0.15em] font-medium">Author Portal</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Clean-cut Navigation (Removed redundant dead links) */}
-        <nav className="flex-1 space-y-2">
-          {/* Dashboard Tab */}
+        {/* Navigation */}
+        <nav className="flex-1 space-y-1.5 mt-4">
           <div 
             onClick={() => scrollToSection('dashboard-top')}
-            className="flex items-center gap-unit px-unit py-3 rounded-xl transition-all duration-200 bg-surface-container-lowest text-primary border-l-4 border-primary shadow-sm cursor-pointer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 bg-[#3a2a2e] text-white shadow-sm cursor-pointer relative group overflow-hidden"
           >
-            <span className="material-symbols-outlined">dashboard</span>
-            {sidebarOpen && <span className="font-label-md text-label-md">Dashboard</span>}
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1/2 bg-primary rounded-r-full" />
+            <span className="material-symbols-outlined text-[20px] mb-0.5 text-primary">dashboard</span>
+            <AnimatePresence>
+              {sidebarOpen && (
+                <motion.span 
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="font-semibold text-[13px] ml-1 overflow-hidden whitespace-nowrap"
+                >
+                  Dashboard
+                </motion.span>
+              )}
+            </AnimatePresence>
           </div>
 
-          {/* Support Tab */}
           <div 
             onClick={() => scrollToSection('support-section')}
-            className="flex items-center gap-unit px-unit py-3 rounded-xl transition-all hover:bg-surface-container-high text-on-surface-variant cursor-pointer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-white/5 text-white/70 hover:text-white cursor-pointer group"
           >
-            <span className="material-symbols-outlined">contact_support</span>
-            {sidebarOpen && <span className="font-label-md text-label-md">Support Query</span>}
+            <span className="material-symbols-outlined text-[20px] mb-0.5">contact_support</span>
+            <AnimatePresence>
+              {sidebarOpen && (
+                <motion.span 
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="font-semibold text-[13px] ml-1 overflow-hidden whitespace-nowrap"
+                >
+                  Support Query
+                </motion.span>
+              )}
+            </AnimatePresence>
           </div>
         </nav>
 
-        {/* Bottom panel Logout */}
-        <div className="mt-auto border-t border-outline-variant pt-4">
-          <button 
+        {/* User Profile / Logout */}
+        <div className="mt-auto border-t border-white/10 pt-4">
+          <div 
             onClick={logout}
-            className="w-full bg-surface-container-high text-on-surface-variant py-3 rounded-xl font-label-md hover:brightness-95 hover:text-error transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+            className="flex items-center gap-3 px-2 py-2 rounded-xl transition-all hover:bg-error/10 text-white/70 hover:text-error cursor-pointer group"
           >
-            <span className="material-symbols-outlined text-[20px]">logout</span>
-            {sidebarOpen && <span>Logout</span>}
-          </button>
+            <div className="w-8 h-8 rounded-full bg-white/10 group-hover:bg-error/20 flex items-center justify-center shrink-0 transition-colors">
+              <span className="font-bold text-[11px] text-white/90 group-hover:text-error">{user?.name?.charAt(0) || 'A'}</span>
+            </div>
+            <AnimatePresence>
+              {sidebarOpen && (
+                <motion.div 
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  className="flex-1 min-w-0 overflow-hidden"
+                >
+                  <p className="text-[13px] font-semibold text-white/90 truncate group-hover:text-error transition-colors">{user?.name || 'Author'}</p>
+                  <p className="text-[10px] text-white/40 truncate group-hover:text-error/70 transition-colors">Sign out</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </motion.aside>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0" id="dashboard-top">
         {/* TopNavBar */}
-        <header className="flex justify-between items-center px-8 h-16 w-full sticky top-0 z-40 bg-surface-container-lowest shadow-sm border-b border-outline-variant">
+        <header className="flex justify-between items-center px-8 h-16 w-full sticky top-0 z-40 header-glass shadow-sm border-b border-outline-variant/50">
           <div className="flex items-center gap-4">
-            <h2 className="font-body-md text-body-md text-on-surface-variant">Welcome, <span className="font-semibold text-primary">{user.name}</span></h2>
+            <h2 className="text-[16px] text-on-surface-variant font-medium tracking-tight">Welcome back, <span className="font-bold text-on-surface">{user.name}</span></h2>
           </div>
           <div className="flex items-center gap-4">
-            <div className="relative hidden sm:block">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-              <input className="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary-container transition-all" placeholder="Search manuscripts..." type="text"/>
-            </div>
-            <button onClick={logout} className="flex items-center gap-1 px-4 py-2 rounded-full border border-outline hover:bg-surface-container-high transition-colors active:scale-95 cursor-pointer">
+            <button onClick={logout} className="flex items-center justify-center w-9 h-9 rounded-full bg-surface-container-low border border-outline-variant/30 hover:bg-surface-container-high hover:text-error transition-colors active:scale-95 cursor-pointer">
               <span className="material-symbols-outlined text-[18px]">logout</span>
-              <span className="font-label-md text-label-md">Logout</span>
             </button>
           </div>
         </header>
@@ -233,12 +268,6 @@ export default function AuthorDashboard() {
               <div>
                 <h3 className="font-headline-md text-headline-md text-primary font-bold">Performance Overview</h3>
                 <p className="font-label-md text-on-surface-variant mt-1">Track your publications and earnings in real-time.</p>
-              </div>
-              <div className="flex gap-2">
-                <button className="flex items-center gap-1 px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full text-on-surface-variant hover:bg-surface-container-high transition-all cursor-pointer">
-                  <span className="material-symbols-outlined text-[20px]">download</span>
-                  <span className="font-label-md text-label-md">Export CSV</span>
-                </button>
               </div>
             </div>
             <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
@@ -296,18 +325,44 @@ export default function AuthorDashboard() {
               </div>
               <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant p-6 shadow-sm">
                 <form className="space-y-4" onSubmit={submitTicket}>
-                  <div className="space-y-1">
+                  <div className="space-y-1 relative">
                     <label className="font-label-md text-label-md text-on-surface-variant">Associated Book</label>
-                    <select 
-                      value={selectedBook}
-                      onChange={(e) => setSelectedBook(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-outline-variant focus:ring-2 focus:ring-primary-container outline-none bg-background transition-all"
+                    <div 
+                      className="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-background cursor-pointer flex justify-between items-center hover:border-primary/50 transition-colors"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                      <option value="">Other / General Query</option>
-                      {books.map(b => (
-                        <option key={b._id} value={b._id}>{b.title}</option>
-                      ))}
-                    </select>
+                      <span className={selectedBook ? "text-on-surface" : "text-on-surface-variant"}>
+                        {selectedBook ? (books.find(b => b._id === selectedBook)?.title || 'Other / General Query') : 'Other / General Query'}
+                      </span>
+                      <span className={`material-symbols-outlined transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>expand_more</span>
+                    </div>
+                    
+                    <AnimatePresence>
+                      {isDropdownOpen && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute w-full mt-2 bg-surface-container-lowest border border-outline-variant/50 rounded-xl shadow-lg z-50 overflow-hidden"
+                        >
+                          <div 
+                            className="px-4 py-2.5 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/20 text-on-surface"
+                            onClick={() => { setSelectedBook(''); setIsDropdownOpen(false); }}
+                          >
+                            Other / General Query
+                          </div>
+                          {books.map(b => (
+                            <div 
+                              key={b._id}
+                              className="px-4 py-2.5 hover:bg-surface-container-low cursor-pointer transition-colors border-b border-outline-variant/20 last:border-none text-on-surface"
+                              onClick={() => { setSelectedBook(b._id); setIsDropdownOpen(false); }}
+                            >
+                              {b.title}
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                   <div className="space-y-1">
                     <label className="font-label-md text-label-md text-on-surface-variant">Subject</label>
@@ -402,35 +457,53 @@ export default function AuthorDashboard() {
                           exit={{ opacity: 0, height: 0 }}
                           className="border-t border-outline-variant bg-surface-container-low p-4 space-y-4"
                         >
-                          <div className="flex flex-col max-h-[300px] overflow-y-auto custom-scrollbar p-1">
+                          <div className="flex flex-col max-h-[350px] overflow-y-auto chat-bg-pattern p-4 space-y-2 rounded-xl mb-4 border border-outline-variant/30 shadow-inner">
                             {(() => {
                               const visibleMessages = ticket.messages.filter((m: any) => !m.isInternal);
                               return visibleMessages.map((msg: any, idx: number) => {
                                 const prevMsg = idx > 0 ? visibleMessages[idx - 1] : null;
-                                const prevSenderId = prevMsg ? (prevMsg.sender._id || prevMsg.sender) : null;
-                                const currentSenderId = msg.sender._id || msg.sender;
+                                const prevSenderId = prevMsg ? (typeof prevMsg.sender === 'object' ? prevMsg.sender?._id : prevMsg.sender) : null;
+                                const currentSenderId = typeof msg.sender === 'object' ? msg.sender?._id : msg.sender;
                                 const isSameSender = prevMsg && (prevSenderId === currentSenderId);
-                                const isSelf = msg.sender === user.id || msg.sender._id === user.id;
+                                
+                                const msgSenderId = typeof msg.sender === 'object' ? msg.sender?._id : msg.sender;
+                                const loggedInUserId = user?.id || user?._id;
+                                const isSelf = msg.sender?.role === 'author' || (msgSenderId && loggedInUserId && msgSenderId.toString() === loggedInUserId.toString());
+                                const timeStr = new Date(msg.timestamp || msg.createdAt || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-                                return (
-                                  <div 
-                                    key={idx} 
-                                    className={`max-w-[85%] rounded-2xl p-3 shadow-sm flex flex-col ${
-                                      isSelf 
-                                        ? 'self-end bg-primary text-on-primary' 
-                                        : 'self-start bg-surface-container-lowest text-on-surface border border-outline-variant/30'
-                                    } ${
-                                      isSameSender ? 'mt-1' : 'mt-4'
-                                    } ${
-                                      isSelf 
-                                        ? (isSameSender ? 'rounded-tr-2xl' : 'rounded-tr-none') 
-                                        : (isSameSender ? 'rounded-tl-2xl' : 'rounded-tl-none')
-                                    }`}
-                                  >
-                                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.message}</p>
-                                    <span className={`block text-[9px] mt-1.5 font-mono ${isSelf ? 'text-on-primary/70' : 'text-on-surface-variant'}`}>
-                                      {new Date(msg.timestamp || msg.createdAt || Date.now()).toLocaleString()}
-                                    </span>
+                                return isSelf ? (
+                                  <div key={idx} className={`flex justify-end msg-author ${isSameSender ? 'mt-1' : 'mt-5'}`}>
+                                    <div className="flex items-end gap-2 max-w-[70%]">
+                                      <div className={`bg-primary text-white px-4 py-2.5 shadow-sm ${
+                                        isSameSender ? 'rounded-2xl rounded-br-lg' : 'rounded-2xl rounded-br-sm'
+                                      }`}>
+                                        <p className="text-[13px] whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                                        <span className="text-[10px] text-white/50 mt-1.5 block text-right font-mono">{timeStr}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div key={idx} className={`flex justify-start msg-admin ${isSameSender ? 'mt-1' : 'mt-5'}`}>
+                                    <div className="flex items-end gap-2 max-w-[70%]">
+                                      {!isSameSender ? (
+                                        <div className="w-7 h-7 rounded-full bg-surface-container-high shrink-0 flex items-center justify-center shadow-sm mb-0.5">
+                                          <span className="text-[10px] font-bold text-on-surface-variant">
+                                            {msg.sender?.name?.charAt(0) || 'A'}
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <div className="w-7 shrink-0" />
+                                      )}
+                                      <div className={`bg-white border border-outline-variant/20 text-on-surface px-4 py-2.5 shadow-sm ${
+                                        isSameSender ? 'rounded-2xl rounded-bl-lg' : 'rounded-2xl rounded-bl-sm'
+                                      }`}>
+                                        {!isSameSender && (
+                                          <p className="text-[10px] font-semibold text-primary mb-1">{msg.sender?.name || 'Support'}</p>
+                                        )}
+                                        <p className="text-[13px] whitespace-pre-wrap leading-relaxed">{msg.message}</p>
+                                        <span className="text-[10px] text-on-surface-variant/40 mt-1.5 block font-mono">{timeStr}</span>
+                                      </div>
+                                    </div>
                                   </div>
                                 );
                               });
@@ -439,24 +512,33 @@ export default function AuthorDashboard() {
                           
                           {/* Live Interactive Chat Input for Authors! */}
                           {ticket.status !== 'Resolved' && (
-                            <div className="pt-2 flex gap-2 select-none">
-                              <input 
+                            <div className="flex flex-col bg-white border border-outline-variant/60 shadow-sm rounded-2xl p-2 focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+                              <textarea 
                                 value={ticketReplies[ticket._id] || ''}
                                 onChange={(e) => setTicketReplies(prev => ({ ...prev, [ticket._id]: e.target.value }))}
                                 onKeyDown={(e) => {
-                                  if (e.key === 'Enter') sendReply(ticket._id);
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    sendReply(ticket._id);
+                                  }
                                 }}
-                                className="flex-1 bg-surface-container-lowest border border-outline-variant rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary shadow-inner" 
-                                placeholder="Type a reply..." 
-                                type="text"
+                                className="w-full bg-transparent border-none focus:ring-0 resize-none outline-none custom-scrollbar text-[14px] text-on-surface px-3 py-2" 
+                                placeholder="Write a reply..." 
+                                rows={2}
                               />
-                              <button 
-                                onClick={() => sendReply(ticket._id)}
-                                disabled={isReplying[ticket._id] || !ticketReplies[ticket._id]?.trim()}
-                                className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center transition-all hover:brightness-110 disabled:opacity-50 active:scale-90 shadow-md cursor-pointer shrink-0"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">send</span>
-                              </button>
+                              <div className="flex justify-between items-center px-2 pt-2 border-t border-outline-variant/20">
+                                <button className="p-1.5 hover:bg-surface-container-low rounded-lg transition-colors text-outline flex items-center justify-center cursor-pointer">
+                                  <span className="material-symbols-outlined text-[18px]">attach_file</span>
+                                </button>
+                                <button 
+                                  onClick={() => sendReply(ticket._id)}
+                                  disabled={isReplying[ticket._id] || !ticketReplies[ticket._id]?.trim()}
+                                  className="bg-primary text-white px-4 py-1.5 rounded-lg text-[11px] font-semibold shadow-sm hover:shadow-md hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-40 disabled:active:scale-100 flex items-center gap-1.5 cursor-pointer"
+                                >
+                                  <span>Send</span>
+                                  <span className="material-symbols-outlined text-[14px]">send</span>
+                                </button>
+                              </div>
                             </div>
                           )}
                           {ticket.status === 'Resolved' && (
@@ -475,16 +557,6 @@ export default function AuthorDashboard() {
           </section>
         </div>
         
-        <footer className="p-8 border-t border-outline-variant mt-8 select-none">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="font-label-md text-label-sm text-on-surface-variant">© 2024 BookLeaf Publishing Portal. All rights reserved.</p>
-            <div className="flex gap-6">
-              <a className="font-label-md text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
-              <a className="font-label-md text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
-              <a className="font-label-md text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Admin</a>
-            </div>
-          </div>
-        </footer>
       </main>
     </div>
   );

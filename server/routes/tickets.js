@@ -24,6 +24,7 @@ router.get('/', verifyToken, async (req, res) => {
       .populate('author', 'name email')
       .populate('book', 'title isbn')
       .populate('assigned_admin', 'name email')
+      .populate('messages.sender', 'name email role')
       .sort({ createdAt: -1 });
 
     res.json(tickets);
@@ -138,7 +139,12 @@ router.patch('/:id', verifyToken, async (req, res) => {
     }
 
     await ticket.save();
-    res.json(ticket);
+    const populatedTicket = await Ticket.findById(ticket._id)
+      .populate('author', 'name email')
+      .populate('book', 'title isbn')
+      .populate('assigned_admin', 'name email')
+      .populate('messages.sender', 'name email role');
+    res.json(populatedTicket);
   } catch (error) {
     console.error('Update ticket error:', error);
     res.status(500).json({ error: 'Failed to update ticket.' });
@@ -157,7 +163,15 @@ router.get('/:id/draft', verifyToken, async (req, res) => {
       return res.status(403).json({ error: 'Access denied. Only admins can draft responses.' });
     }
 
+    console.log(`[AI Draft] Generating draft for ticket: ${ticket._id} (subject: "${ticket.subject}")`);
     const draft = await draftResponse(ticket);
+    
+    if (!draft) {
+      console.error('[AI Draft] draftResponse returned null — check GROQ_API_KEY or API errors above.');
+      return res.status(500).json({ error: 'AI draft generation returned empty. Check your GROQ_API_KEY.' });
+    }
+
+    console.log(`[AI Draft] Success — draft length: ${draft.length} chars`);
     res.json({ draft });
   } catch (error) {
     console.error('Draft response error:', error);
