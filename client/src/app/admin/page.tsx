@@ -426,9 +426,9 @@ export default function AdminDashboard() {
                   <>
                     {/* Workspace Header */}
                     <header className="h-20 shrink-0 border-b border-outline-variant flex items-center px-margin bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-30 justify-between">
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-sm">
-                          <h2 className="font-headline-md text-headline-md text-primary truncate max-w-sm">{selectedTicket.subject}</h2>
+                      <div className="flex flex-col min-w-0">
+                        <div className="flex items-center gap-sm min-w-0">
+                          <h2 className="font-headline-md text-headline-md text-primary truncate max-w-[450px] md:max-w-[550px]">{selectedTicket.subject}</h2>
                           <span className="bg-primary-fixed text-on-primary-fixed-variant px-sm py-1 rounded-full font-label-md text-[10px]">#{selectedTicket._id.slice(-6).toUpperCase()}</span>
                         </div>
                         <div className="flex items-center gap-base mt-1">
@@ -524,10 +524,15 @@ export default function AdminDashboard() {
                     </header>
 
                     {/* Conversation area scroll list with padding at the bottom to avoid being hidden behind hovering input */}
-                    <div className="flex-1 overflow-y-auto p-margin space-y-lg custom-scrollbar pb-[280px]">
-                      {selectedTicket.messages.map((msg: any, idx: number) => (
-                        msg.isInternal ? (
-                          <div key={idx} className="flex justify-center">
+                    <div className="flex-1 overflow-y-auto p-margin custom-scrollbar pb-[280px] flex flex-col">
+                      {selectedTicket.messages.map((msg: any, idx: number) => {
+                        const prevMsg = idx > 0 ? selectedTicket.messages[idx - 1] : null;
+                        const prevSenderId = prevMsg ? (prevMsg.sender._id || prevMsg.sender) : null;
+                        const currentSenderId = msg.sender._id || msg.sender;
+                        const isSameSender = prevMsg && (prevSenderId === currentSenderId) && (prevMsg.isInternal === msg.isInternal);
+                        
+                        return msg.isInternal ? (
+                          <div key={idx} className={`flex justify-center ${isSameSender ? 'mt-1' : 'mt-4'}`}>
                             <div className="bg-primary-fixed/30 border border-primary-fixed-dim p-sm rounded-lg flex items-center gap-sm max-w-xl shadow-sm">
                               <span className="material-symbols-outlined text-primary text-[18px]">lock</span>
                               <p className="font-body-sm text-on-primary-fixed-variant whitespace-pre-wrap">
@@ -539,31 +544,39 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         ) : msg.sender._id === user.id || msg.sender === user.id ? (
-                          <div key={idx} className="flex flex-row-reverse gap-md max-w-3xl ml-auto animate-fade-in">
-                            <div className="w-10 h-10 rounded-full bg-primary overflow-hidden shrink-0 flex items-center justify-center shadow-md">
-                              <span className="text-on-primary font-bold">{msg.sender.name ? msg.sender.name.charAt(0) : 'A'}</span>
-                            </div>
-                            <div className="bg-primary-container text-on-primary p-md rounded-2xl rounded-tr-none shadow-sm">
-                              <p className="font-body-md whitespace-pre-wrap">{msg.message}</p>
+                          <div key={idx} className={`flex flex-row-reverse gap-md max-w-3xl ml-auto animate-fade-in w-full ${isSameSender ? 'mt-1' : 'mt-4'}`}>
+                            {!isSameSender ? (
+                              <div className="w-10 h-10 rounded-full bg-primary overflow-hidden shrink-0 flex items-center justify-center shadow-md select-none">
+                                <span className="text-on-primary font-bold">{msg.sender.name ? msg.sender.name.charAt(0) : 'A'}</span>
+                              </div>
+                            ) : (
+                              <div className="w-10 shrink-0 select-none" />
+                            )}
+                            <div className={`bg-primary-container text-on-primary p-md rounded-2xl shadow-sm max-w-[80%] ${isSameSender ? 'rounded-tr-2xl' : 'rounded-tr-none'}`}>
+                              <p className="font-body-md whitespace-pre-wrap leading-relaxed">{msg.message}</p>
                               <span className="font-label-md text-[11px] text-on-primary-container mt-2 block opacity-70">
                                 {new Date(msg.timestamp || msg.createdAt || Date.now()).toLocaleString()}
                               </span>
                             </div>
                           </div>
                         ) : (
-                          <div key={idx} className="flex gap-md max-w-3xl animate-fade-in">
-                            <div className="w-10 h-10 rounded-full bg-surface-dim overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
-                              <span className="material-symbols-outlined text-outline">person</span>
-                            </div>
-                            <div className="bg-surface-container-high p-md rounded-2xl rounded-tl-none shadow-sm">
-                              <p className="font-body-md text-on-surface whitespace-pre-wrap">{msg.message}</p>
+                          <div key={idx} className={`flex gap-md max-w-3xl animate-fade-in w-full ${isSameSender ? 'mt-1' : 'mt-4'}`}>
+                            {!isSameSender ? (
+                              <div className="w-10 h-10 rounded-full bg-surface-dim overflow-hidden shrink-0 flex items-center justify-center shadow-sm select-none">
+                                <span className="material-symbols-outlined text-outline">person</span>
+                              </div>
+                            ) : (
+                              <div className="w-10 shrink-0 select-none" />
+                            )}
+                            <div className={`bg-surface-container-high p-md rounded-2xl shadow-sm max-w-[80%] ${isSameSender ? 'rounded-tl-2xl' : 'rounded-tl-none'}`}>
+                              <p className="font-body-md text-on-surface whitespace-pre-wrap leading-relaxed">{msg.message}</p>
                               <span className="font-label-md text-[11px] text-on-surface-variant mt-2 block">
                                 {new Date(msg.timestamp || msg.createdAt || Date.now()).toLocaleString()}
                               </span>
                             </div>
                           </div>
-                        )
-                      ))}
+                        );
+                      })}
                       <div className="h-10"></div>
                     </div>
 
