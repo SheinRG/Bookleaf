@@ -31,6 +31,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date() });
 });
 
+// Root route for Render health checks and browser visits
+app.get('/', (req, res) => {
+  res.send('BookLeaf API is running.');
+});
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
