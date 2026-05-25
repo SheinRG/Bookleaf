@@ -61,7 +61,7 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-// Delete a ticket (only author can delete their own closed/resolved tickets)
+// Delete a ticket
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     console.log(`[API] DELETE /tickets/${req.params.id} called by ${req.user.id} (${req.user.role})`);
@@ -70,14 +70,16 @@ router.delete('/:id', verifyToken, async (req, res) => {
       return res.status(404).json({ error: 'Ticket not found.' });
     }
 
-    // Only the ticket author can delete
-    if (ticket.author.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'Access denied. You can only delete your own tickets.' });
-    }
-
-    // Only allow deletion if ticket is Closed or Resolved
-    if (ticket.status !== 'Closed' && ticket.status !== 'Resolved') {
-      return res.status(400).json({ error: 'Only closed or resolved tickets can be deleted.' });
+    // Role-based access control
+    if (req.user.role === 'author') {
+      // Authors can only delete their own tickets
+      if (ticket.author.toString() !== req.user.id) {
+        return res.status(403).json({ error: 'Access denied. You can only delete your own tickets.' });
+      }
+      // Authors can only delete Closed or Resolved tickets
+      if (ticket.status !== 'Closed' && ticket.status !== 'Resolved') {
+        return res.status(400).json({ error: 'Only closed or resolved tickets can be deleted.' });
+      }
     }
 
     await Ticket.findByIdAndDelete(req.params.id);
@@ -243,26 +245,6 @@ router.get('/:id/draft', verifyToken, async (req, res) => {
   }
 });
 
-// Delete a ticket
-router.delete('/:id', verifyToken, async (req, res) => {
-  try {
-    const ticket = await Ticket.findById(req.params.id);
-    if (!ticket) {
-      return res.status(404).json({ error: 'Ticket not found.' });
-    }
 
-    // Role-based access control:
-    // Authors can only delete their own tickets. Admins can delete any ticket.
-    if (req.user.role === 'author' && ticket.author.toString() !== req.user.id) {
-      return res.status(403).json({ error: 'Access denied. You can only delete your own tickets.' });
-    }
-
-    await Ticket.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Ticket deleted successfully.' });
-  } catch (error) {
-    console.error('Delete ticket error:', error);
-    res.status(500).json({ error: 'Failed to delete ticket.' });
-  }
-});
 
 module.exports = router;

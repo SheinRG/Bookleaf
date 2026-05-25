@@ -66,7 +66,7 @@ export default function LoginPage() {
       <div className="glass-card rounded-xl p-lg flex flex-col items-center">
         {/* Brand Anchor */}
         <div className="mb-md flex flex-col items-center">
-          <img alt="BookLeaf Brand Logo" className="w-16 h-16 object-contain mb-sm" src="/logo.png" />
+          <img alt="BookLeaf Brand Logo" className="w-16 h-16 object-cover rounded-2xl mb-sm" src="/logo.ico" />
           <h1 className="font-headline-md text-headline-md text-primary tracking-tight">BookLeaf</h1>
           <p className="font-label-md text-label-md text-secondary uppercase tracking-widest mt-1">Portal Login</p>
         </div>

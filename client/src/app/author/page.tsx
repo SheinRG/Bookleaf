@@ -90,9 +90,9 @@ export default function AuthorDashboard() {
         >
           <motion.div
             whileHover={{ scale: 1.06 }}
-            className="w-10 h-10 rounded-xl bg-primary/90 flex items-center justify-center shadow-lg shrink-0"
+            className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shrink-0"
           >
-            <span className="material-symbols-outlined text-white text-[22px]">menu_book</span>
+            <img src="/logo.ico" alt="BookLeaf" className="w-full h-full object-cover" />
           </motion.div>
           <AnimatePresence>
             {sidebarOpen && (

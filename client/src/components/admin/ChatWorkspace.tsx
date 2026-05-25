@@ -32,6 +32,7 @@ export default function ChatWorkspace({
   const [priorityOpen, setPriorityOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [categoryOpen, setCategoryOpen] = useState(false);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
@@ -101,12 +102,59 @@ export default function ChatWorkspace({
 
   if (!selectedTicket) {
     return (
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 bg-background select-none">
-        <div className="w-16 h-16 rounded-2xl bg-surface-container-low flex items-center justify-center mb-4">
-          <span className="material-symbols-outlined text-[32px] text-outline-variant">forum</span>
-        </div>
-        <p className="text-[15px] font-bold text-on-surface/80">Select a conversation</p>
-        <p className="text-[12px] text-on-surface-variant/50 mt-1 max-w-[240px]">Choose a ticket from the inbox to view the conversation and respond</p>
+      <section className="flex-1 flex flex-col items-center justify-center text-center px-6 bg-background relative select-none overflow-hidden">
+        {/* Background Decorative Elements */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-amber-500/5 rounded-full blur-[80px] pointer-events-none" />
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative z-10 flex flex-col items-center"
+        >
+          {/* Animated Icon Container */}
+          <motion.div 
+            whileHover={{ scale: 1.05, rotate: 5 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="w-24 h-24 rounded-[32px] bg-gradient-to-br from-surface-container to-surface-container-high border border-outline-variant/30 shadow-2xl flex items-center justify-center mb-8 relative group cursor-default"
+          >
+            <div className="absolute inset-0 bg-primary/10 rounded-[32px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
+            <span className="material-symbols-outlined text-[42px] text-primary/80 drop-shadow-md">forum</span>
+            
+            {/* Notification Badge Dot */}
+            <motion.div 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5, type: "spring" }}
+              className="absolute -top-1 -right-1 w-5 h-5 bg-error rounded-full border-2 border-background shadow-sm"
+            />
+          </motion.div>
+
+          <h2 className="text-[28px] font-black text-on-surface tracking-tight mb-3">
+            Your Workspace
+          </h2>
+          <p className="text-[15px] text-on-surface-variant/70 max-w-[320px] leading-relaxed font-medium">
+            Select a ticket from the inbox to start helping authors and resolving issues.
+          </p>
+
+          {/* Quick Stats or Decorative UI underneath */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="mt-10 flex items-center gap-4 text-[13px] font-bold text-on-surface-variant/50"
+          >
+            <div className="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/20 shadow-sm">
+              <span className="material-symbols-outlined text-[16px] text-primary">bolt</span>
+              <span>Fast Responses</span>
+            </div>
+            <div className="flex items-center gap-2 bg-surface-container-low px-4 py-2 rounded-xl border border-outline-variant/20 shadow-sm">
+              <span className="material-symbols-outlined text-[16px] text-amber-500">auto_awesome</span>
+              <span>AI Assisted</span>
+            </div>
+          </motion.div>
+        </motion.div>
       </section>
     );
   }
@@ -139,50 +187,43 @@ export default function ChatWorkspace({
 
         {/* Priority, Status, and Admin Assignment dropdowns */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Assignment dropdown */}
+          {/* Assignment dropdown removed as per user request */}
+
+          {/* Category Capsule */}
           <div className="relative">
             <button 
-              onClick={() => { setAssignOpen(!assignOpen); setPriorityOpen(false); setStatusOpen(false); }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wide cursor-pointer transition-all border ${
-                selectedTicket.assigned_admin 
-                  ? 'bg-primary/5 border-primary/20 text-primary hover:bg-primary/10' 
-                  : 'bg-surface-container border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-high'
-              }`}
+              onClick={() => { setCategoryOpen(!categoryOpen); setPriorityOpen(false); setStatusOpen(false); setAssignOpen(false); }}
+              className="flex items-center gap-1.5 bg-surface-container-low border border-outline-variant/30 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-primary cursor-pointer hover:bg-surface-container-high transition-all"
             >
-              <span className="material-symbols-outlined text-[13px]">person</span>
-              {selectedTicket.assigned_admin ? selectedTicket.assigned_admin.name.split(' ')[0] : 'Unassigned'}
-              <svg className={`w-3 h-3 transition-transform duration-200 ${assignOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span className="material-symbols-outlined text-[14px]">sell</span>
+              {selectedTicket.category}
+              <svg className={`w-3 h-3 transition-transform duration-200 ${categoryOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             <AnimatePresence>
-              {assignOpen && (
+              {categoryOpen && (
                 <motion.div 
                   initial={{ opacity: 0, y: -4, scale: 0.96 }}
                   animate={{ opacity: 1, y: 4, scale: 1 }}
                   exit={{ opacity: 0, y: -4, scale: 0.96 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 top-full mt-1 bg-white border border-outline-variant/30 rounded-xl shadow-lg p-1 z-50 min-w-[180px] max-h-[220px] overflow-y-auto custom-scrollbar"
+                  className="absolute right-0 top-full mt-1 bg-white border border-outline-variant/30 rounded-xl shadow-lg p-1 z-50 min-w-[210px]"
                 >
-                  <button
-                    onClick={() => handleAdminAssign('unassigned')}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-[12px] font-bold text-error transition-colors hover:bg-error/5 cursor-pointer`}
-                  >
-                    Clear Assignment
-                  </button>
-                  <div className="h-[1px] bg-outline-variant/20 my-1" />
-                  {admins.map(admin => (
+                  {[
+                    'Royalty & Payments',
+                    'ISBN & Metadata Issues',
+                    'Printing & Quality',
+                    'Distribution & Availability',
+                    'Book Status & Production Updates',
+                    'General Inquiry'
+                  ].map(c => (
                     <button
-                      key={admin._id}
-                      onClick={() => handleAdminAssign(admin._id)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-[12px] font-medium transition-colors cursor-pointer flex items-center justify-between ${
-                        selectedTicket.assigned_admin?._id === admin._id 
-                          ? 'bg-primary/5 text-primary font-bold' 
-                          : 'text-on-surface hover:bg-surface-container-low'
-                      }`}
+                      key={c}
+                      onClick={() => { onUpdateTicket({ category: c }); setCategoryOpen(false); }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-[12px] font-medium transition-colors cursor-pointer ${selectedTicket.category === c ? 'bg-primary/5 text-primary font-bold' : 'text-on-surface hover:bg-surface-container-low'}`}
                     >
-                      <span>{admin.name}</span>
-                      <span className="text-[9px] text-on-surface-variant/40 italic">{admin.name === user.name ? 'You' : ''}</span>
+                      {c}
                     </button>
                   ))}
                 </motion.div>
@@ -193,7 +234,7 @@ export default function ChatWorkspace({
           {/* Priority Capsule */}
           <div className="relative">
             <button 
-              onClick={() => { setPriorityOpen(!priorityOpen); setStatusOpen(false); setAssignOpen(false); }}
+              onClick={() => { setPriorityOpen(!priorityOpen); setStatusOpen(false); setAssignOpen(false); setCategoryOpen(false); }}
               className={`priority-${selectedTicket.priority.toLowerCase()} flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wide cursor-pointer hover:brightness-95 transition-all`}
             >
               {selectedTicket.priority === 'Critical' && <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />}
@@ -228,7 +269,7 @@ export default function ChatWorkspace({
           {/* Status Capsule */}
           <div className="relative">
             <button 
-              onClick={() => { setStatusOpen(!statusOpen); setPriorityOpen(false); setAssignOpen(false); }}
+              onClick={() => { setStatusOpen(!statusOpen); setPriorityOpen(false); setAssignOpen(false); setCategoryOpen(false); }}
               className="flex items-center gap-1.5 bg-surface-container-low border border-outline-variant/30 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-on-surface-variant cursor-pointer hover:bg-surface-container-high transition-all"
             >
               <span className={`w-1.5 h-1.5 rounded-full ${selectedTicket.status === 'Open' ? 'bg-error' : selectedTicket.status === 'Resolved' || selectedTicket.status === 'Closed' ? 'bg-green-500' : 'bg-primary'}`} />
