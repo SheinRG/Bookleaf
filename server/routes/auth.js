@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { JWT_SECRET } = require('../middleware/auth');
+const { JWT_SECRET, verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -40,4 +40,16 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Get list of all administrators
+router.get('/admins', verifyToken, async (req, res) => {
+  try {
+    const admins = await User.find({ role: 'admin' }, 'name email');
+    res.json(admins);
+  } catch (error) {
+    console.error('Fetch admins error:', error);
+    res.status(500).json({ error: 'Failed to retrieve administrators.' });
+  }
+});
+
 module.exports = router;
+

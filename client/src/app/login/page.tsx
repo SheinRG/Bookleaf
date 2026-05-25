@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { API_URL } from '@/lib/api';
 import Image from 'next/image';
@@ -12,6 +12,14 @@ export default function LoginPage() {
   const [role, setRole] = useState<'author' | 'admin'>('author');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.search.includes('reason=session_overwrite')) {
+      setError('You were logged out because you opened a different portal in another tab, overwriting this session.');
+      // Remove query param from URL without reloading
+      window.history.replaceState({}, '', '/login');
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

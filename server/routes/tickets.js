@@ -15,6 +15,7 @@ router.get('/', verifyToken, async (req, res) => {
     if (req.user.role === 'author') {
       query.author = req.user.id;
     }
+    console.log(`[API] GET /tickets called by ${req.user.id} (${req.user.role}). Query:`, query);
 
     if (status) query.status = status;
     if (priority) query.priority = priority;
@@ -24,13 +25,67 @@ router.get('/', verifyToken, async (req, res) => {
       .populate('author', 'name email')
       .populate('book', 'title isbn')
       .populate('assigned_admin', 'name email')
-      .populate('messages.sender', 'name email role')
-      .sort({ createdAt: -1 });
+      .populate('messages.sender', 'name email role');
+
+    // Intelligent Sorting:
+    // 1. Unresolved first (Open/In Progress) vs Resolved/Closed
+    // 2. Unresolved sorted by priority weight (Critical > High > Medium > Low)
+    // 3. Unresolved of same priority sorted by age (oldest first, i.e., createdAt ascending)
+    // 4. Resolved/Closed tickets sorted newest first (createdAt descending)
+    const priorityWeight = { 'Critical': 4, 'High': 3, 'Medium': 2, 'Low': 1 };
+    
+    tickets.sort((a, b) => {
+      const aUnresolved = (a.status === 'Open' || a.status === 'In Progress') ? 1 : 0;
+      const bUnresolved = (b.status === 'Open' || b.status === 'In Progress') ? 1 : 0;
+      
+      if (aUnresolved !== bUnresolved) {
+        return bUnresolved - aUnresolved; // Unresolved first
+      }
+      
+      if (aUnresolved === 1) {
+        const aWeight = priorityWeight[a.priority] || 0;
+        const bWeight = priorityWeight[b.priority] || 0;
+        if (aWeight !== bWeight) {
+          return bWeight - aWeight; // High priority weight first
+        }
+        return new Date(a.createdAt) - new Date(b.createdAt); // Oldest first
+      } else {
+        return new Date(b.createdAt) - new Date(a.createdAt); // Newest first
+      }
+    });
 
     res.json(tickets);
   } catch (error) {
     console.error('Fetch tickets error:', error);
     res.status(500).json({ error: 'Failed to retrieve tickets.' });
+  }
+});
+
+// Delete a ticket (only author can delete their own closed/resolved tickets)
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    console.log(`[API] DELETE /tickets/${req.params.id} called by ${req.user.id} (${req.user.role})`);
+    const ticket = await Ticket.findById(req.params.id);
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found.' });
+    }
+
+    // Only the ticket author can delete
+    if (ticket.author.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied. You can only delete your own tickets.' });
+    }
+
+    // Only allow deletion if ticket is Closed or Resolved
+    if (ticket.status !== 'Closed' && ticket.status !== 'Resolved') {
+      return res.status(400).json({ error: 'Only closed or resolved tickets can be deleted.' });
+    }
+
+    await Ticket.findByIdAndDelete(req.params.id);
+    console.log(`[API] Ticket ${req.params.id} deleted successfully.`);
+    res.json({ message: 'Ticket deleted successfully.' });
+  } catch (error) {
+    console.error('Delete ticket error:', error);
+    res.status(500).json({ error: 'Failed to delete ticket.' });
   }
 });
 
@@ -127,7 +182,13 @@ router.patch('/:id', verifyToken, async (req, res) => {
       if (status) ticket.status = status;
       if (category) ticket.category = category;
       if (priority) ticket.priority = priority;
-      if (assigned_admin) ticket.assigned_admin = assigned_admin;
+      if (assigned_admin) {
+        if (assigned_admin === 'unassigned' || assigned_admin === 'null') {
+          ticket.assigned_admin = undefined;
+        } else {
+          ticket.assigned_admin = assigned_admin;
+        }
+      }
       
       if (new_message) {
         ticket.messages.push({
@@ -154,7 +215,9 @@ router.patch('/:id', verifyToken, async (req, res) => {
 // Draft response
 router.get('/:id/draft', verifyToken, async (req, res) => {
   try {
-    const ticket = await Ticket.findById(req.params.id).populate('book');
+    const ticket = await Ticket.findById(req.params.id)
+      .populate('book')
+      .populate('messages.sender', 'name email role');
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket not found.' });
     }
@@ -177,6 +240,28 @@ router.get('/:id/draft', verifyToken, async (req, res) => {
   } catch (error) {
     console.error('Draft response error:', error);
     res.status(500).json({ error: 'Failed to generate draft.' });
+  }
+});
+
+// Delete a ticket
+router.delete('/:id', verifyToken, async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found.' });
+    }
+
+    // Role-based access control:
+    // Authors can only delete their own tickets. Admins can delete any ticket.
+    if (req.user.role === 'author' && ticket.author.toString() !== req.user.id) {
+      return res.status(403).json({ error: 'Access denied. You can only delete your own tickets.' });
+    }
+
+    await Ticket.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Ticket deleted successfully.' });
+  } catch (error) {
+    console.error('Delete ticket error:', error);
+    res.status(500).json({ error: 'Failed to delete ticket.' });
   }
 });
 
